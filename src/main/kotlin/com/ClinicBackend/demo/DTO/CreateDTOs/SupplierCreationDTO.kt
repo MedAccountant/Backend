@@ -1,0 +1,38 @@
+package com.ClinicBackend.demo.DTO.CreateDTOs
+
+import com.ClinicBackend.demo.DTO.DepartmentDTO
+import com.ClinicBackend.demo.Entities.Supplier
+
+class SupplierCreationDTO() {
+    var email: String? = null
+    var name: String? = null
+    var departments:List<DepartmentDTO>? = null
+    var workingMarker:Boolean? = null
+
+    /*constructor(supplier: Supplier):this(){
+        login=supplier.login
+        nickname=supplier.nickname
+        role=supplier.role
+        departments=supplier.departments.map{ DepartmentDTO(it) }
+    }*/
+    fun makeSupplierFromDTO(): Supplier {
+        var newSupplier = Supplier()
+        newSupplier.email=email
+        newSupplier.name=name
+        newSupplier.workingMarker=workingMarker
+        return newSupplier
+    }
+
+    override fun toString():String{
+        var departmentsString=""
+        departments!!.forEach {departmentsString+=it.toString() +",\n"}
+        return  "{\n" +
+                "\"name\":$name \n" +
+                "\"email\":$email \n" +
+                "\"workingMarker\":$workingMarker \n" +
+                "\"departments\":[\n" +
+                departmentsString+
+                "\n]\n" +
+                "}"
+    }
+}
