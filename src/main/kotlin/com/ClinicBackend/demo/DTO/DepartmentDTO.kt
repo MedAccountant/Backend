@@ -1,6 +1,5 @@
 package com.ClinicBackend.demo.DTO
 
-import com.ClinicBackend.demo.Entities.Company
 import com.ClinicBackend.demo.Entities.Department
 
 class DepartmentDTO() {

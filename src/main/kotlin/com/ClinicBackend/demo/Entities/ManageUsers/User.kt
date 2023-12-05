@@ -23,7 +23,7 @@ open class User() {
     @Enumerated(EnumType.STRING)
     open var role: Role?=null
 
-    @Column(length = 30)
+    @Column(length = 100)
     open var password:String?=null
 
     //orders---------------------

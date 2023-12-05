@@ -3,6 +3,7 @@ package com.ClinicBackend.demo.Entities
 import com.ClinicBackend.demo.Entities.ManageLoadedData.LoadedData
 import com.ClinicBackend.demo.Entities.ManageOrders.ComplaintsNReplies
 import com.ClinicBackend.demo.Entities.ManageOrders.Order
+import com.ClinicBackend.demo.Entities.ManagePositions.CurrentPosition
 import com.ClinicBackend.demo.Entities.ManageUsers.User
 import jakarta.persistence.*
 
@@ -35,6 +36,9 @@ open class Department() {
 
     @OneToMany(mappedBy = "senderDepartment"/*,cascade = [(CascadeType.ALL)]*/)
     open var complaintsNReplies=mutableSetOf<ComplaintsNReplies>()
+
+    @OneToMany(mappedBy = "department"/*,cascade = [(CascadeType.ALL)]*/)
+    open var currentPositions=mutableSetOf<CurrentPosition>()
 
     //fun deleteUser(user: User)=users.remove(user)
 

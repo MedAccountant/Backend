@@ -10,13 +10,13 @@ open class PositionData() {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "position_data_id")
-    open var positionsDataId: Long? = null
+    open var positionDataId: Long? = null
 
     @Column(name = "position_name", length = 40)
     open var name: String? = null
 
     @Column(name = "unique_marker")
-    open var uniqueMarker: Boolean? = null
+    open var uniqueMarker: Boolean=false
 
     @ManyToOne
     @JoinColumn(name = "loaded_data_id")
@@ -29,10 +29,10 @@ open class PositionData() {
     open var count: Long? = null
 
     @Column(name = "edited_marker")
-    open var editedMarker: Boolean? = null
+    open var editedMarker: Boolean=false
 
     @Column(name = "processed_marker")
-    open var processedMarker: Boolean? = null
+    open var processedMarker: Boolean=false
 
     @ManyToOne
     @JoinColumn(name = "edited_by_id")
@@ -42,9 +42,37 @@ open class PositionData() {
     @JoinColumn(name = "processed_by_id")
     open var processedBy: User? = null
 
-    @OneToMany(mappedBy = "positionToPositionsData")
-    open var positionAttributes= mutableSetOf<PositionAttributes>()
+    @OneToMany(mappedBy = "positionToPositionData", cascade = [CascadeType.ALL])
+    open var attributes= mutableSetOf<PositionAttribute>()
 
-    @OneToMany(mappedBy = "positionToPositionsData")
+    @OneToMany(mappedBy = "positionToPositionData", cascade = [CascadeType.ALL])
     open var limits= mutableSetOf<Limits>()
+    override fun toString(): String {
+        return "PositionData(\n" +
+                "name=$name,\n" +
+                "uniqueMarker=$uniqueMarker,\n" +
+                "count=$count,\n" +
+                "editedMarker=$editedMarker,\n" +
+                "processedMarker=$processedMarker,\n" +
+                "positionAttributes=[${attributes.joinToString("\n")}],\n" +
+                "limits=[${limits.joinToString("\n")}])"
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is PositionData) return false
+
+        if (name != other.name) return false
+        if (attributes != other.attributes) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = name?.hashCode() ?: 0
+        result = 31 * result + attributes.hashCode()
+        return result
+    }
+
+
 }

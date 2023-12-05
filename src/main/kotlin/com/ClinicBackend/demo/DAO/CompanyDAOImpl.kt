@@ -4,6 +4,8 @@ import com.ClinicBackend.demo.Entities.*
 import com.ClinicBackend.demo.Entities.ManageUsers.User
 import com.ClinicBackend.demo.Repos.*
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
+import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Component
 
 @Component("CompanyDAOImpl")
@@ -16,6 +18,9 @@ class CompanyDAOImpl:CompanyDAO {
 
     @Autowired
     lateinit private var userRepos:UserRepos
+
+    @Autowired
+    lateinit private var passwordEncoder: PasswordEncoder
 
     @Autowired
     lateinit private var supplierRepos: SupplierRepos
@@ -57,7 +62,10 @@ class CompanyDAOImpl:CompanyDAO {
     //user management
     override fun getAllUsersFromCompany(companyName: String)=
         userRepos.findByDepartmentsIn(companyRepos.findByCompanyName(companyName)!!.departments)
-    override fun addUser(newUser: User)=userRepos.save(newUser).login
+    override fun addUser(newUser: User):String{
+        newUser.password=passwordEncoder.encode(newUser.password)
+        return userRepos.save(newUser).login!!
+    }
     override fun deleteUser(login:String) {
         val userToDelete=userRepos.findByLogin(login)!!
     // userToDelete.departments.forEach { it.deleteUser(userToDelete) }
@@ -68,6 +76,7 @@ class CompanyDAOImpl:CompanyDAO {
         println("oldUserLogin: $oldUserLogin, oldUserFind: $oldUser")
         println("====================================")
         println("newUser: $newUser")
+        newUser.password=passwordEncoder.encode(newUser.password)
         oldUser?.editUser(newUser)
         userRepos.save(oldUser!!)
         return newUser.login
