@@ -1,6 +1,8 @@
 package com.ClinicBackend.demo.Entities.ManagePositions
 
 import jakarta.persistence.*
+import java.time.LocalDate
+import java.util.Date
 
 @Entity
 @Table(name="limits")
@@ -42,10 +44,12 @@ open class Limits() {
     open var max:Long?=null
 
     @Column(name = "start_date", length = 10)
-    open var startDate:String?=null
+    @Temporal(TemporalType.DATE)
+    open var startDate: LocalDate?=null
 
     @Column(name = "end_date", length = 10)
-    open var endDate:String?=null
+    @Temporal(TemporalType.DATE)
+    open var endDate:LocalDate?=null
 
     @ManyToOne
     @JoinColumn(name = "position_data_id")

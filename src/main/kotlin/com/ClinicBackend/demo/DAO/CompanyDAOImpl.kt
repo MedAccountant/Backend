@@ -73,9 +73,9 @@ class CompanyDAOImpl:CompanyDAO {
     }
     override fun editUser(oldUserLogin: String, newUser: User, companyName: String): String? {
         val oldUser=userRepos.findByLogin(oldUserLogin)
-        println("oldUserLogin: $oldUserLogin, oldUserFind: $oldUser")
-        println("====================================")
-        println("newUser: $newUser")
+//        println("oldUserLogin: $oldUserLogin, oldUserFind: $oldUser")
+//        println("====================================")
+//        println("newUser: $newUser")
         newUser.password=passwordEncoder.encode(newUser.password)
         oldUser?.editUser(newUser)
         userRepos.save(oldUser!!)
@@ -88,7 +88,6 @@ class CompanyDAOImpl:CompanyDAO {
     override fun addSupplier(newSupplier: Supplier)=supplierRepos.save(newSupplier).email
     override fun deleteSupplier(email:String) {
         val supplierToDelete=supplierRepos.findByEmail(email)!!
-        // supplierToDelete.departments.forEach { it.deleteSupplier(supplierToDelete) }
         supplierRepos.delete(supplierToDelete)
     }
     override fun editSupplier(oldSupplierEmail: String, newSupplier: Supplier,companyName: String): String? {

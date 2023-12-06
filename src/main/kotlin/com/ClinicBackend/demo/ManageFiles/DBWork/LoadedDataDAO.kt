@@ -8,6 +8,7 @@ import com.ClinicBackend.demo.Entities.ManageLoadedData.LoadedData
 import com.ClinicBackend.demo.Entities.ManagePositions.*
 import com.ClinicBackend.demo.ManageFiles.Exceptions.StorageException
 import com.ClinicBackend.demo.Repos.*
+import jakarta.transaction.Transactional
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Example
 import org.springframework.security.core.context.SecurityContextHolder
@@ -81,11 +82,7 @@ class LoadedDataDAO {
             //find position in current positions
             //val inCurrentPositions=currentPositionRepos.findAll(Example.of(CurrentPosition(newPositionData)))
             println("maybe error")
-            val inCurrentPositions=currentPositionRepos
-                .findWithAttributesAndLimitsByNameAndAttributes_AttributeNameInAndDepartmentIn(newPositionData.name!!,
-                    newPositionData.attributes.map { it.attributeName!! }.toSet(),
-                    setOf(loadedData.department!!)
-                )
+            val inCurrentPositions=getEqualCurrentPositions(newPositionData, listOf(loadedData.department!!))
             println("maybe error 2")
             println("founded in currentPositions: ${inCurrentPositions.map { it.name }.joinToString(",")}")
             if(inCurrentPositions.isNotEmpty()){
@@ -170,14 +167,28 @@ class LoadedDataDAO {
                 positionData.attributes.map { it.attributeName!! }.toSet(),
                 departments.toSet()).filter {it.attributes==positionData.attributes}
 
-    fun getCurrentPositionsOfDepartmentsList(departments: List<Department>):List<CurrentPosition>{
+    fun getEqualCurrentPositions(positionData: PositionData, departments: List<Department>)=currentPositionRepos
+        .findAllByNameAndAttributes_AttributeNameInAndDepartmentIn(
+            positionData.name!!,
+            positionData.attributes.map{it.attributeName!!}.toSet(),
+            departments.toSet()).filter {it.attributes==positionData.attributes}
+
+    /*fun getCurrentPositionsOfDepartmentsList(departments: List<Department>):List<CurrentPosition>{
         return departments.flatMap {it.currentPositions.toList()}
         //return loadedDataRepos.findAllLoadedDataWithPositionsByDepartment(department)
-    }
+    }*/
 
     fun getPositionDataById(id:Long)=positionDataRepos.findById(id).orElseThrow()
 
+    @Transactional
     fun savePositionsData(positions:List<PositionData>){
         positions.forEach { positionDataRepos.saveAll(positions) }
     }
+
+    @Transactional
+    fun createCurrentPositions(currentPositions: List<CurrentPosition>){
+        currentPositionRepos.saveAll(currentPositions)
+    }
+
+    fun getCurrentPositionsFromDepartments(departments: List<Department>)=currentPositionRepos.findAll()
 }

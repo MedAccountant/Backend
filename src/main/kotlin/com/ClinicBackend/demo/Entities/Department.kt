@@ -25,22 +25,20 @@ open class Department() {
     @JoinColumn(name = "company_id")
     open var company:Company?=null
 
-    @ManyToMany(/*cascade = [CascadeType.ALL], */mappedBy = "departments")
+    @ManyToMany(mappedBy = "departments")
     open var users= mutableSetOf<User>()
 
-    @OneToMany(mappedBy = "department"/*,cascade = [(CascadeType.ALL)]*/)
+    @OneToMany(mappedBy = "department")
     open var orders=mutableSetOf<Order>()
 
-    @OneToMany(mappedBy = "department"/*,cascade = [(CascadeType.ALL)]*/)
+    @OneToMany(mappedBy = "department")
     open var loadedDataOfDepartment=mutableSetOf<LoadedData>()
 
-    @OneToMany(mappedBy = "senderDepartment"/*,cascade = [(CascadeType.ALL)]*/)
+    @OneToMany(mappedBy = "senderDepartment")
     open var complaintsNReplies=mutableSetOf<ComplaintsNReplies>()
 
-    @OneToMany(mappedBy = "department"/*,cascade = [(CascadeType.ALL)]*/)
+    @OneToMany(mappedBy = "department")
     open var currentPositions=mutableSetOf<CurrentPosition>()
-
-    //fun deleteUser(user: User)=users.remove(user)
 
     fun editDepartment(newDepartment: Department){
         departmentName=newDepartment.departmentName

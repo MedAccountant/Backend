@@ -42,10 +42,10 @@ open class PositionData() {
     @JoinColumn(name = "processed_by_id")
     open var processedBy: User? = null
 
-    @OneToMany(mappedBy = "positionToPositionData", cascade = [CascadeType.ALL])
+    @OneToMany(mappedBy = "positionToPositionData", cascade = [CascadeType.ALL], orphanRemoval = true)
     open var attributes= mutableSetOf<PositionAttribute>()
 
-    @OneToMany(mappedBy = "positionToPositionData", cascade = [CascadeType.ALL])
+    @OneToMany(mappedBy = "positionToPositionData", cascade = [CascadeType.ALL], orphanRemoval = true)
     open var limits= mutableSetOf<Limits>()
     override fun toString(): String {
         return "PositionData(\n" +

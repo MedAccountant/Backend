@@ -16,5 +16,5 @@ open class PositionToBuy() {
 
     @OneToOne(cascade = [CascadeType.ALL])
     @JoinColumn(name = "currentPositionId")
-    private val currentPosition:CurrentPosition? = null
+    open var currentPosition:CurrentPosition? = null
 }

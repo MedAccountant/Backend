@@ -16,6 +16,8 @@ import org.springframework.data.domain.Example
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
 import java.io.FileInputStream
+import java.time.Period
+import java.time.temporal.ChronoUnit
 
 @Service
 class LoadedDataService {
@@ -24,6 +26,9 @@ class LoadedDataService {
 
     @Autowired
     private lateinit var loadedDataDAO: LoadedDataDAO
+
+    @Autowired
+    private lateinit var userRepos: UserRepos
 
     fun processFile(linkToFile:String, docType: DocType, companyName:String){
         loadedDataDAO.startProcessingDependingOnDocType(linkToFile,docType,companyName)
@@ -55,7 +60,7 @@ class LoadedDataService {
     fun updateLimitsAndAttributesPositionData(positionDataId:Long,
                                   departments: List<Department>,
                                   newExtraInfoForPositionDataDTO: ExtraInfoForPositionDataDTO,
-                                  companyName: String):Boolean{
+                                  companyName: String):ExtraInfoForPositionDataDTO{
         val requiredPositionData=/*positionDataDTO.makePositionDataFromDTO()*/
             loadedDataDAO.getPositionDataById(positionDataId)
         val equalPositions=loadedDataDAO.getEqualPositionsData(requiredPositionData,departments)
@@ -65,24 +70,58 @@ class LoadedDataService {
                 .map { it.makeLimitsFromDTO() }
             val positionDataFromDepartment=equalPositions.find { it.loadedData!!.department==department }!!
             limitsForDepartment.forEach{it.positionToPositionData=positionDataFromDepartment}
-            positionDataFromDepartment.limits=limitsForDepartment.toMutableSet()
+            //positionDataFromDepartment.limits=limitsForDepartment.toMutableSet()
+            positionDataFromDepartment.limits.clear()
+            positionDataFromDepartment.limits.addAll(limitsForDepartment)
         }
         if(requiredPositionData.attributes !=
             newExtraInfoForPositionDataDTO.attributes.map { it.makeAttributeFromDTO() }.toSet()){
             equalPositions.forEach { position->
-                position.attributes=newExtraInfoForPositionDataDTO.attributes
+                position.attributes.clear()
+                position.attributes.addAll(newExtraInfoForPositionDataDTO.attributes
                     .map { attribute->
-                        attribute.makeAttributeFromDTO().also { it.positionToPositionData = position} }.toMutableSet() }
+                        attribute.makeAttributeFromDTO().also { it.positionToPositionData = position} })
+                /*position.attributes=newExtraInfoForPositionDataDTO.attributes
+                    .map { attribute->
+                        attribute.makeAttributeFromDTO().also { it.positionToPositionData = position} }.toMutableSet()*/ }
         }
+        if(departments.size==1)equalPositions.first().editedBy=userRepos.findByLogin(newExtraInfoForPositionDataDTO.editedBy!!)
         println("equals: ======================")
         equalPositions.forEach { println(it) }
         loadedDataDAO.savePositionsData(equalPositions)
+        return getNewPositionExtraData(positionDataId,departments,companyName)
+    }
+
+    fun saveToCurrentPositions(positionDataId:Long,
+                               departments: List<Department>,
+                               companyName: String):Boolean{
+        val requiredPositionData=loadedDataDAO.getPositionDataById(positionDataId)
+        val equalPositions=loadedDataDAO.getEqualPositionsData(requiredPositionData,departments)
+        for(position in equalPositions){
+            val limits=position.limits.sortedBy { it.startDate }
+            if(limits.size==0) throw SavePositionException("there is no limits")
+            var daysCount:Int= ChronoUnit.DAYS.between(limits[0].startDate,limits[0].endDate).toInt()
+            //println("daysCount: $daysCount, i: 0, ${limits[0].startDate.toString()}, ${limits[0].endDate.toString()}")
+            for(i in 1 until limits.size){
+                if(limits[i-1].endDate!!>=limits[i].startDate!!)
+                    throw SavePositionException("there are limits with intersections of periods")
+                daysCount+=ChronoUnit.DAYS.between(limits[i].startDate,limits[i].endDate).toInt()
+                //println("daysCount: $daysCount, i: $i, ${limits[0].startDate.toString()}, ${limits[0].endDate.toString()}")
+            }
+            println("daysCount: $daysCount")
+            if(daysCount<365)
+                throw SavePositionException("there are days without limits for department: ${position.loadedData!!.department}")
+        }
+        loadedDataDAO.createCurrentPositions(equalPositions.map { CurrentPosition(it,it.loadedData!!.department!!) })
+        equalPositions.forEach {
+            it.processedMarker=true
+            it.processedBy=userRepos.findByLogin(SecurityContextHolder.getContext().authentication.name)
+        }
+        println("current in departments: ")
+        //departments.forEach { getCurrentPositionsOfDepartment(it).forEach { pos->println(pos) } }
         return true
     }
 
-    fun getCurrentPositionsOfDepartment(department: Department):List<CurrentPosition>{
-        return department.currentPositions.toList()
-    }
 
     fun getDepartmentFromCompany(departmentName:String,companyName: String)=
         companyDAOImpl.getDepartmentByNameAndCompany(departmentName,companyName)

@@ -6,6 +6,14 @@ import jakarta.persistence.*
 @Table(name="position_attributes")
 open class PositionAttribute() {
 
+    constructor(positionAttribute: PositionAttribute):this(){
+        attributeName=positionAttribute.attributeName
+        value=positionAttribute.value
+        positionToPositionData=positionAttribute.positionToPositionData
+        positionToCurrentPosition=positionAttribute.positionToCurrentPosition
+        positionToUniquePosition=positionAttribute.positionToUniquePosition
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "position_attribute_id")

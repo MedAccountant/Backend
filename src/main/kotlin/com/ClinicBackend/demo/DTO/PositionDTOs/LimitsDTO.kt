@@ -2,13 +2,17 @@ package com.ClinicBackend.demo.DTO.PositionDTOs
 
 import com.ClinicBackend.demo.DTO.DepartmentDTO
 import com.ClinicBackend.demo.Entities.ManagePositions.Limits
-import com.ClinicBackend.demo.Entities.ManagePositions.PositionData
+import com.fasterxml.jackson.annotation.JsonFormat
+import java.time.LocalDate
+import java.util.*
 
 class LimitsDTO() {
     var min:Long?=null
     var max:Long?=null
-    var startDate:String?=null
-    var endDate:String?=null
+    @JsonFormat(pattern="yyyy-MM-dd")
+    var startDate: LocalDate?=null
+    @JsonFormat(pattern="yyyy-MM-dd")
+    var endDate:LocalDate?=null
     var department:DepartmentDTO?=null
 
     constructor(limits: Limits):this(){

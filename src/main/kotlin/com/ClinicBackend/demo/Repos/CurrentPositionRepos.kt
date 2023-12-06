@@ -11,8 +11,8 @@ import org.springframework.stereotype.Repository
 @Repository
 interface CurrentPositionRepos: JpaRepository<CurrentPosition, Long> {
     @EntityGraph(attributePaths = ["attributes","limits"])
-    fun findWithAttributesAndLimitsByNameAndAttributes_AttributeNameInAndDepartmentIn
+    fun findAllByNameAndAttributes_AttributeNameInAndDepartmentIn
                 (name:String,namesOfAttributes: Set<String>,departments: Set<Department>):List<CurrentPosition>
 
-
+    fun findAllByDepartmentIn(departments: Set<Department>):List<CurrentPosition>
 }

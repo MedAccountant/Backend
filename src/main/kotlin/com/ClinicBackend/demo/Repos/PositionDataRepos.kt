@@ -8,6 +8,7 @@ import com.ClinicBackend.demo.Entities.ManagePositions.PositionAttribute
 import com.ClinicBackend.demo.Entities.ManagePositions.PositionData
 import org.springframework.data.jpa.repository.EntityGraph
 import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.data.jpa.repository.Query
 import org.springframework.stereotype.Repository
 
 @Repository
@@ -15,7 +16,6 @@ interface PositionDataRepos: JpaRepository<PositionData, Long> {
     fun findAllByProcessedMarkerEqualsAndLoadedData_DocumentTypeInAndLoadedData_DepartmentIn
                 (processedMarker:Boolean, docTypeSet: Set<DocType>,departments: Set<Department>):List<PositionData>
 
-   //@EntityGraph(attributePaths = ["attributes","limits"])
     fun findAllByProcessedMarkerEqualsAndNameAndAttributes_AttributeNameInAndLoadedData_DepartmentIn
                 (processedMarker: Boolean,name:String,namesOfAttributes: Set<String>,departments: Set<Department>):List<PositionData>
 
