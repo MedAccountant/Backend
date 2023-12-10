@@ -1,0 +1,27 @@
+version: '3'
+
+services:
+  db:
+    image: 'postgres:16'
+    container_name: 'java-postgres'
+    environment:
+      - 'POSTGRES_USER=postgres'
+      - 'POSTGRES_DB=itclinic'
+      - 'POSTGRES_PASSWORD=1234'
+    ports: 
+    - 5432:5432
+    networks:
+     - default
+
+  app:
+    build: .
+    container_name: 'java-backend'
+    ports:
+      - 6570:8080
+    restart: on-failure
+    depends_on:
+      - db
+    links:
+      - db
+    networks:
+      - default
