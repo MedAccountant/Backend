@@ -43,8 +43,10 @@ _При таком стечении обстоятельств, когда ка�
 # REST API
 в файле API_doc
 # Технологии разработки
-Spring Boot Framework, Hibernte (ORM), язык Kotlin
+Spring Boot Framework, Spring Data JPA, язык Kotlin
 ## СУБД
 PostgreSQL
 # Тестирование
 Вручную через Postman
+# Запуск
+Docker, nginx
